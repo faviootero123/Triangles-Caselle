@@ -1,0 +1,85 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Triangles page";
+}
+
+<div class="card">
+    <h5 class="card-header">Triangle Assessment - Provides information about a triangle given the lengths of three sides.</h5>
+    <div class="card-body rounded pb-2">
+        <div class="row mb-2 align-items-center">
+            <div class="col-3 text-end">
+                @Html.Raw("Side A length: ")
+            </div>
+            <div class="col-9">
+                <div class="form-group">
+                    <input id="a" type="number" oninput="calculation()" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2 align-items-center">
+            <div class="col-3 text-end">
+                @Html.Raw("Side B length: ")
+            </div>
+            <div class="col-9">
+                <div class="form-group">
+                    <input id="b" type="number" oninput="calculation()" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2 align-items-center">
+            <div class="col-3 text-end">
+                @Html.Raw("Side C length: ")
+            </div>
+            <div class="col-9">
+                <div class="form-group">
+                    <input id="c" type="number" oninput="calculation()" class="form-control" />
+                </div>
+            </div>
+        </div>       
+        <div id="divInfo" class="text-center pt-2"></div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function calculation() {
+           // Get the sides of the triangles as strings and parse them into decimals. 
+           let a = parseFloat($('#a').val());
+           let b = parseFloat($('#b').val());
+           let c = parseFloat($('#c').val());
+
+           if ($('#idInfo').length){ $('#idInfo').remove();}
+
+           // If all sides are numbers, enter function. 
+           if (!isNaN(a) && !isNaN(b) && !isNaN(c)) {
+               // Checks if it is a valid triangle. 
+               if ((a + b > c) && (a + c > b) && (b + c > a)) {
+                   var response = "<p id='idInfo'>These side lengths produce a valid triangle. "
+                   // Classifies the triangle by its sides. 
+                   let side = a == b && b == c && a == c ? "The triangle is Equilateral "
+                            : a == b || b == c || a == c ? "The triangle is Isosceles "
+                            : "The triangle is Scalene ";
+                   response += side; 
+                   // Use of the Law of cosines to get each angle. 
+                   let CosA = (b ** 2 + c ** 2 - a ** 2) / (2 * b * c);
+                   let CosB = (a ** 2 + c ** 2 - b ** 2) / (2 * a * c);
+                   let CosC = (a ** 2 + b ** 2 - c ** 2) / (2 * a * b);
+                   // Classifies the triangle by its angles.
+                   let angle = RadiansToDegrees(Math.acos(CosA)) < 90 && RadiansToDegrees(Math.acos(CosB)) < 90 && RadiansToDegrees(Math.acos(CosC)) < 90 ? "and Acute. "
+                             : RadiansToDegrees(Math.acos(CosA)) == 90 || RadiansToDegrees(Math.acos(CosB)) == 90 || RadiansToDegrees(Math.acos(CosC)) == 90 ? "and Right. "
+                             : "and Obtuse. ";
+                    response += angle + "Angle ∠A is " + RadiansToDegrees(Math.acos(CosA)).toFixed(3) + "°, ∠B is " + RadiansToDegrees(Math.acos(CosB)).toFixed(3) + "°, ∠C is " + RadiansToDegrees(Math.acos(CosC)).toFixed(3) + "°.</p>";
+                   $('#divInfo').append(response);                    
+               }
+               else {
+                   $('#divInfo').append("<p id='idInfo'>These side lengths produce an invalid triangle.</p>")
+               }
+           }
+        }
+        
+        function RadiansToDegrees(value) {
+            return value * (180 / Math.PI); 
+        }
+    </script>
+}
